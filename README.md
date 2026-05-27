@@ -195,3 +195,6 @@ X = XW + Z
 X = Z (I - W)^(-1)
 ```
 
+
+Oueoueoue
+
