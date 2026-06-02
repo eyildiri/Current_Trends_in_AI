@@ -4,3 +4,4 @@ __pycache__/
 results/
 *.npy
 .DS_Store
+RAG Project/chroma_db/
