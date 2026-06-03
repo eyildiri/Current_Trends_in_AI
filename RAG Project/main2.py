@@ -1,15 +1,12 @@
 import os
-import requests
 import numpy as np
 import chromadb
-import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from google import genai
 from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder
 from dotenv import load_dotenv
-
 
 # 1. Environment initialization and GCP Credential Mapping
 load_dotenv()
@@ -44,8 +41,6 @@ all_documents = all_db_data['documents']
 tokenized_corpus = [doc.lower().split(" ") for doc in all_documents]
 bm25 = BM25Okapi(tokenized_corpus)
 
-# API endpoint used by evaluate_method
-API_URL = "http://localhost:8000/api/ask"
 
 # ==========================================
 # REQUEST MODELING (Pydantic schemas)
@@ -99,17 +94,10 @@ def execute_reranking(query_text, top_k=3):
     return [candidate_docs[idx] for idx in sorted_indices[:top_k]]
 
 def execute_hyde_search(query_text, top_k=3):
-    hyde_prompt = f"""Write a factual paragraph that would likely appear in a document answering the following question.
-    
-    Question: '{query_text}'
-    
-    Paragraph:
-    """
+    hyde_prompt = f"Write a brief, hypothetical paragraph answering the following question: '{query_text}'"
     hyde_response = ai_client.models.generate_content(model="gemini-2.5-flash", contents=hyde_prompt)
-    hypothetical_doc = hyde_response.text
-    print("Original Query:", query_text)
-    print("Generated HyDE Document:", hypothetical_doc)
-    return execute_hybrid_search(hypothetical_doc, top_k=top_k)
+    return execute_hybrid_search(hyde_response.text, top_k=top_k)
+
 
 # ==========================================
 # FASTAPI ROUTER ENDPOINTS
@@ -156,30 +144,3 @@ The data:
         retrieved_context=contexts,
         answer=answer_text
     )
-
-# ==========================================
-# RAGAS EVALUATION FUNCTION
-# ==========================================
-def evaluate_method(method_id: int):
-    results = []
-    eval_pairs_df = pd.read_csv("squad_eval_pairs.csv")
-    for _, sample in eval_pairs_df.iterrows():
-        try:
-            response = requests.post(
-                API_URL,
-                json={"question": sample['question'], "method": method_id},
-                timeout=60
-            )
-            response.raise_for_status()
-            results.append((QueryResponse(**response.json()), sample['answers']['text'][0]))
-        except Exception as e:
-            print(f"Error processing question: {sample['question']}\nError: {str(e)}")
- 
-    ragas_dataset = Dataset.from_dict({
-        "question":          [r.question          for r, _  in results],
-        "answer":            [r.answer            for r, _  in results],
-        "retrieved_context": [r.retrieved_context for r, _  in results],
-        "ground_truth":      [gt                  for _, gt in results],
-    })
- 
-    return evaluate(ragas_dataset, metrics=[faithfulness, answer_relevancy, context_recall])
