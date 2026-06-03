@@ -1,0 +1,12 @@
+The paper states that only looking for the improvement on LLm when looking to improve a rag is not the only best idea. In this paper, they emphasizes that retriever component should be where we need to
+focus on when looking to improve a rag system. It is why they have implemented a Blended RAG where we find a combination of different retrievers. First, there is the Keyword search retriever (BM25) which 
+is a traditional retriever that looks for exact matches of keywords in the query and the documents. It uses fuzzy matching to increase the performance. Then, the Dense retriever search with KNN embeddings. 
+It is a retriever that here looking for contextual similarity between the query and the documents using embeddings. Finally a Sparse semantic search retriever(ELSER/ SParse Encoder). It is a combination of
+semantic and similarity search. It looks to better understand the real intention behind the question and the contexts and then find better matching documents. Even more, each request and document is associated
+with a large trianing set of data. It allows the to better improve the context around the concept and then find better matching documents. With that they combiend these retrievers with different versions of 
+multimatch queries. As the infomration is spread out in the different field of the text , different types of thecniques exists to better select the best fiels for the answer. We can find Best Fields that will
+find the best field over the other having the best matches for the query, Cross Fields that will try to combine the different matches across the field to better give the answer. Most field will use all the matches
+to better describe the document. Each latching field will contribute, etc. The "Blended" comes to this combination of Retriever and multi-match techniques . They underlignesd the imoportance of how the query was executed.
+The best retriver found was Sparse Encoder + Best Fields across multiple datsets. It yields results against previous methods implmented as . When implemented in Rag, it outperms previous rag method. The results whereobtain using Squad 
+a known large dataser known to have text coming from wikipedia with specific designed questions for them. It is larlegly used to compare the performance of Rag. The Rag yields incridible result in a lot of field ( Exact Match, Rag, etc.)
+showing it reliability as a new method.
