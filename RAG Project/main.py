@@ -47,6 +47,10 @@ bm25 = BM25Okapi(tokenized_corpus)
 # API endpoint used by evaluate_method
 API_URL = "http://localhost:8000/api/ask"
 
+# Load the Cross-Encoder re-ranking model into memory at startup
+print("Loading Cross-Encoder re-ranker model into memory...")
+reranker = CrossEncoder("BAAI/bge-reranker-base")
+
 # ==========================================
 # REQUEST MODELING (Pydantic schemas)
 # ==========================================
@@ -92,7 +96,8 @@ def execute_hybrid_search(query_text, top_k=3):
 def execute_reranking(query_text, top_k=3):
     candidate_docs = execute_hybrid_search(query_text, top_k=15)
     if not candidate_docs: return []
-    reranker = CrossEncoder("BAAI/bge-reranker-base")
+
+    
     pairs = [[query_text, doc] for doc in candidate_docs]
     scores = reranker.predict(pairs)
     sorted_indices = np.argsort(scores)[::-1]
@@ -156,30 +161,3 @@ The data:
         retrieved_context=contexts,
         answer=answer_text
     )
-
-# ==========================================
-# RAGAS EVALUATION FUNCTION
-# ==========================================
-def evaluate_method(method_id: int):
-    results = []
-    eval_pairs_df = pd.read_csv("squad_eval_pairs.csv")
-    for _, sample in eval_pairs_df.iterrows():
-        try:
-            response = requests.post(
-                API_URL,
-                json={"question": sample['question'], "method": method_id},
-                timeout=60
-            )
-            response.raise_for_status()
-            results.append((QueryResponse(**response.json()), sample['answers']['text'][0]))
-        except Exception as e:
-            print(f"Error processing question: {sample['question']}\nError: {str(e)}")
- 
-    ragas_dataset = Dataset.from_dict({
-        "question":          [r.question          for r, _  in results],
-        "answer":            [r.answer            for r, _  in results],
-        "retrieved_context": [r.retrieved_context for r, _  in results],
-        "ground_truth":      [gt                  for _, gt in results],
-    })
- 
-    return evaluate(ragas_dataset, metrics=[faithfulness, answer_relevancy, context_recall])
