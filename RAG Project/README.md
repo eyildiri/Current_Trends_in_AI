@@ -126,7 +126,7 @@ See `requirements.txt` for full list.
 
 ## Security Notes
 
-⚠️ **Never commit `gcp-key.json` to version control!**
+**Never commit `gcp-key.json` to version control!**
 
 Add to `.gitignore`:
 ```
@@ -143,7 +143,7 @@ gcp-key.json
 - [ChromaDB Documentation](https://docs.trychroma.com/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 
-## 👤 Author
+## Author
 
 BLANQUEZ-YESTE Nicolas, FRANÇOIS Bryan, YILDIRIM Emirhan
 
