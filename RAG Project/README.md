@@ -2,24 +2,7 @@
 
 A comprehensive Retrieval Augmented Generation (RAG) system that compares three different retrieval strategies on the SQuAD dataset using Google Cloud Vertex AI and Gemini.
 
-## 📋 Project Overview
-
-This project implements and evaluates three RAG methods for question answering:
-
-1. **Method 1: Baseline Hybrid Search**
-   - Combines vector embeddings (dense search) with BM25 keyword matching (sparse search)
-   - Uses Reciprocal Rank Fusion (RRF) to merge results
-
-2. **Method 2: Hybrid Search + Cross-Encoder Re-ranking**
-   - Performs hybrid search as baseline
-   - Re-ranks candidates using BAAI/bge-reranker-base cross-encoder model
-
-3. **Method 3: HyDE Expansion + Hybrid Search**
-   - Uses Gemini to generate hypothetical documents for the query
-   - Searches for documents similar to the hypothesis
-   - Effective for complex or out-of-distribution questions
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 RAG Project/
@@ -33,7 +16,7 @@ RAG Project/
 └── README.md                            # This file
 ```
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Python 3.9+
@@ -63,7 +46,7 @@ If you need to re-index the SQuAD data:
 # This downloads and indexes 500 unique SQuAD passages into ChromaDB
 ```
 
-## 📡 Running the Server
+## Running the Server
 
 Start the FastAPI server:
 
@@ -83,7 +66,7 @@ Access the interactive API documentation:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-## 📊 API Endpoints
+## API Endpoints
 
 ### POST `/api/ask`
 
@@ -111,7 +94,7 @@ Query the RAG system and get answers with retrieved context.
 }
 ```
 
-## 📈 Evaluation & Metrics
+## Evaluation & Metrics
 
 Run the evaluation notebook to assess performance:
 
@@ -128,39 +111,7 @@ Run the evaluation notebook to assess performance:
 - `rag_comparison_manual.csv` - Manual comparison results
 - `ragas_evaluation_results.csv` - Aggregated RAGAS scores
 
-## 🔧 Key Components
-
-### Data Structures (Pydantic)
-
-**QueryRequest:**
-- `question` (str): User question
-- `method` (int): Retrieval method ID
-
-**QueryResponse:**
-- `question` (str): Original question
-- `method_used` (str): Method description
-- `retrieved_context` (list): Top 3 retrieved documents
-- `answer` (str): Generated answer from Gemini
-
-### Core Functions
-
-**`execute_dense_search()`**
-- Converts query to embedding vector
-- Finds similar documents using ChromaDB
-
-**`execute_hybrid_search()`**
-- Combines vector search (dense) + BM25 (sparse)
-- Merges results using Reciprocal Rank Fusion
-
-**`execute_reranking()`**
-- Takes top candidates from hybrid search
-- Re-ranks using cross-encoder model
-
-**`execute_hyde_search()`**
-- Generates hypothetical document with Gemini
-- Searches for documents similar to hypothesis
-
-## 📦 Dependencies
+## Dependencies
 
 Key libraries:
 - `fastapi` - Web API framework
@@ -173,9 +124,9 @@ Key libraries:
 
 See `requirements.txt` for full list.
 
-## 🔐 Security Notes
+## Security Notes
 
-⚠️ **Never commit `gcp-key.json` to version control!**
+**Never commit `gcp-key.json` to version control!**
 
 Add to `.gitignore`:
 ```
@@ -184,7 +135,7 @@ gcp-key.json
 *.env
 ```
 
-## 📚 References
+## References
 
 - [SQuAD Dataset](https://rajpurkar.github.io/SQuAD-explorer/)
 - [RAGAS Metrics](https://github.com/explodinggradients/ragas)
@@ -192,10 +143,7 @@ gcp-key.json
 - [ChromaDB Documentation](https://docs.trychroma.com/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 
-## 👤 Author
+## Author
 
-INFO-H512 - Current Trends in Artificial Intelligence (2025-2026)
+BLANQUEZ-YESTE Nicolas, FRANÇOIS Bryan, YILDIRIM Emirhan
 
-## 📝 License
-
-Academic Use Only
